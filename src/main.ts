@@ -1,26 +1,29 @@
-import * as bitcoin from 'bitcoinjs-lib';
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import { connectDatabase } from '@/config';
+import setRoutes from './routes';
+import { errorInterceptor } from './middlewares/controller/error-interceptor.middleware';
 
-const network = bitcoin.networks.regtest; // ou mainnet/testnet
-const psbt = new bitcoin.Psbt({ network });
+export const setupApp = async () => {
+  const app = express();
 
-psbt.addInput({
-  hash: 'a754c854900078bd9255c017a60b6021827a0ea50e10b96b3687f78c37a576d1', // TXID (reverso)
-  index: 1, // vout
-  witnessUtxo: {
-    script: Buffer.from('001474f8994a98015f2a29d16377c16a09b66ee9f172', 'hex'), // scriptPubKey do UTXO
-    value: 1_000_000_000, // satoshi value
-  },
-});
+  app.use(
+    cors({
+      origin: 'http://localhost:5173',
+      allowedHeaders: ['Content-Type', 'Authorization', 'Access-Token'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    }),
+  );
 
-psbt.addOutput({
-  address: 'bcrt1qkqkcpuxxpp62z6xqt2aeevd4aqs02jc7m98mcy', // destino
-  value: 1e8, // valor menos taxa
-});
+  const sequelize = await connectDatabase();
 
-psbt.addOutput({
-  address: 'bcrt1qwnufjj5cq90j52w3vdmuz6sfkehwnutj0x8pg2', // seu endereço de troco
-  value: 1_000_000_000 - 1e8 - 30000, // 1_000_000_000 - 100_000_000 - 1_000 (fee)
-});
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
 
-const base64PSBT = psbt.toBase64();
-console.log('PSBT base64:', base64PSBT);
+  setRoutes(app);
+
+  app.use(errorInterceptor);
+
+  return { app, sequelize };
+};
