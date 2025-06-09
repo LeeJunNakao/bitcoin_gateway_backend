@@ -1,8 +1,12 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { connectDatabase } from '@/config';
-import setRoutes from './routes';
+import setRoutes from '@/controllers';
 import { errorInterceptor } from './middlewares/controller/error-interceptor.middleware';
 
 export const setupApp = async () => {
