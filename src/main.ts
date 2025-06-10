@@ -2,32 +2,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import { connectDatabase } from '@/config';
-import setRoutes from '@/controllers';
-import { errorInterceptor } from './middlewares/controller/error-interceptor.middleware';
+import { setupApp } from './app';
 
-export const setupApp = async () => {
-  const app = express();
+const startApp = async () => {
+  const { app } = await setupApp();
 
-  app.use(
-    cors({
-      origin: 'http://localhost:5173',
-      allowedHeaders: ['Content-Type', 'Authorization', 'Access-Token'],
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    }),
-  );
+  const PORT = process.env.PORT;
 
-  const sequelize = await connectDatabase();
-
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
-
-  setRoutes(app);
-
-  app.use(errorInterceptor);
-
-  return { app, sequelize };
+  app.listen(PORT, () => console.log(`Server running in port: ${PORT}`));
 };
+
+startApp();

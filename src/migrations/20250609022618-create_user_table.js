@@ -19,7 +19,11 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
-            created_at: {
+      role: {
+        type: DataTypes.ENUM(['admin', 'customer']),
+        allowNull: false,
+      },
+      created_at: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
@@ -37,6 +41,8 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    queryInterface.dropTable('user');
+    await queryInterface.dropTable('user');
+
+    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_user_role";');
   },
 };

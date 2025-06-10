@@ -4,7 +4,7 @@ import * as config from '@/config/database';
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = (config as any)[env];
 
-const sequelize = new Sequelize(dbConfig, { define: { underscored: true }, logging: false });
+const sequelize = new Sequelize({ ...dbConfig, define: { underscored: true }, logging: false });
 
 export const connectDatabase = async (cb?: (sequelize: Sequelize) => Promise<void>) => {
   try {
