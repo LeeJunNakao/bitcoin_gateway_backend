@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { Express, Request, Response, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { oautherClient } from '@/utils/auth/oauther-client';
 import { validate } from '@/middlewares/controller/validation.middleware';
-import { RegisterCustomerSchema } from '@/types/validators/register';
+import { RegisterCustomerValidator } from '@/types/validators/register';
 import { RegisterService } from '@/services/register.service';
 import { CryptoMsService } from '@/utils/crypto-ms/http-service';
 
@@ -12,11 +12,11 @@ export default class RegisterController {
   }
 
   async register(req: Request, res: Response) {
-    const dto = req.body as z.infer<typeof RegisterCustomerSchema>;
-    const registerResponse = await this.registerService.register(dto);
+    const dto = req.body as z.infer<typeof RegisterCustomerValidator>;
+    await this.registerService.register(dto);
 
     res.send({
-      user: registerResponse,
+      message: 'User created successfully',
     });
   }
 }
@@ -28,7 +28,7 @@ export const mountRoute = () => {
     new RegisterService(oautherClient, new CryptoMsService()),
   );
 
-  router.post('/', validate(RegisterCustomerSchema), registerController.register);
+  router.post('/', validate(RegisterCustomerValidator), registerController.register);
 
   return router;
 };

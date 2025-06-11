@@ -1,8 +1,10 @@
 import { Express } from 'express';
-import { mountRoute } from './Register.controller';
+import { mountRoute as registerMountRoute } from './register.controller';
+import { mountRoute as authMountRoute } from './auth.controller';
 
 const setRoutes = (app: Express) => {
-  app.use('/register', mountRoute());
+  app.use('/register', registerMountRoute());
+  app.use('/auth', authMountRoute());
 };
 
 export default setRoutes;

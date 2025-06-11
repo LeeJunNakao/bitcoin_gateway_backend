@@ -13,17 +13,25 @@
     "baseUrl": "src",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "allowJs": true,
     "paths": {
-      "@/*": ["./*"],
-      "@services/*": ["services/*"],
-      "@middlewares/*": ["middlewares/*"],
-      "@/models/*": ["models/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@middlewares/*": [
+        "middlewares/*"
+      ],
+      "@/models/*": [
+        "models/*"
+      ]
     }
   }
 }

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
-import { RegisterCustomerSchema } from '@/types/validators/register';
+import { RegisterCustomerValidator } from '@/types/validators/register';
 import { CustomerORM } from '@/models/Customer.orm';
 import { UserORM, UserRole } from '@/models/User.orm';
 import { CustomerUserORM, CustomerUserRole } from '@/models/CustomerUser.orm';
@@ -17,7 +17,7 @@ export class RegisterService {
     private cryptoMsService: CryptoMsService,
   ) {}
 
-  async register(customerData: z.infer<typeof RegisterCustomerSchema>) {
+  async register(customerData: z.infer<typeof RegisterCustomerValidator>) {
     const transaction = await CustomerORM.sequelize.transaction();
 
     try {
