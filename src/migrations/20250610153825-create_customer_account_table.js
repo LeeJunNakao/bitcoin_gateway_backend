@@ -1,43 +1,43 @@
 'use strict';
-
 const { DataTypes } = require('sequelize');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('customer', {
+    await queryInterface.createTable('customer_account', {
       id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
         autoIncrement: true,
+        primaryKey: true,
         allowNull: false,
       },
-      uid: {
-        type: DataTypes.STRING,
+      customer_id: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-      },
-      name: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING(100),
+        references: {
+          model: 'customer',
+          key: 'id',
+        },
         unique: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      page: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
-      customer_type: {
-        type: DataTypes.ENUM(['legal_person', 'natural_person']),
+      account: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        unique: true,
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
       },
       deleted_at: {
         type: DataTypes.DATE,
@@ -47,7 +47,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('customer');
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_customer_customer_type";');
+    await queryInterface.dropTable('customer_account');
   },
 };

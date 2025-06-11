@@ -1,9 +1,6 @@
 import { Table, Column, Model, DataType, NotNull, ForeignKey } from 'sequelize-typescript';
 import { CustomerORM } from './Customer.orm';
-
-enum RequestNetwork {
-  BITCOIN = 'bitcoin',
-}
+import { BlockchainNetwork } from '@/types/entities/blockchain';
 
 enum RequestCurrency {
   BITCOIN = 'bitcoin',
@@ -19,32 +16,53 @@ class PaymentRequestORM extends Model {
   declare id: number;
 
   @NotNull
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   requestUID: string;
 
   @NotNull
   @ForeignKey(() => CustomerORM)
-  @Column
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   customerId: number;
 
   @NotNull
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   expectedValue: string;
 
   @NotNull
-  @Column(DataType.ENUM(...Object.values(RequestNetwork)))
-  network: RequestNetwork;
+  @Column({
+    type: DataType.ENUM(...Object.values(BlockchainNetwork)),
+    allowNull: false,
+  })
+  network: BlockchainNetwork;
 
   @NotNull
-  @Column(DataType.ENUM(...Object.values(RequestCurrency)))
+  @Column({
+    type: DataType.ENUM(...Object.values(RequestCurrency)),
+    allowNull: false,
+  })
   currency: RequestCurrency;
 
   @NotNull
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   networkAddress: string;
 
   @NotNull
-  @Column(DataType.ENUM(...Object.values(RequestStatus)))
+  @Column({
+    type: DataType.ENUM(...Object.values(RequestStatus)),
+    allowNull: false,
+  })
   status: RequestStatus;
 
   @Column

@@ -1,10 +1,18 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import * as config from '@/config/database';
+import { CustomerORM } from '@/models/Customer.orm';
+import { UserORM } from '@/models/User.orm';
+import { models } from '@/models';
 
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = (config as any)[env];
 
-const sequelize = new Sequelize({ ...dbConfig, define: { underscored: true }, logging: false });
+const sequelize = new Sequelize({
+  ...dbConfig,
+  models: models,
+  define: { underscored: true },
+  logging: false,
+});
 
 export const connectDatabase = async (cb?: (sequelize: Sequelize) => Promise<void>) => {
   try {
@@ -14,7 +22,7 @@ export const connectDatabase = async (cb?: (sequelize: Sequelize) => Promise<voi
       await cb(sequelize);
     }
 
-    const sequelizeOptions = process.env.NODE_ENV === 'test' ? { force: true } : { alter: true };
+    const sequelizeOptions = process.env.NODE_ENV === 'test' ? { force: true } : {};
 
     await sequelize.sync(sequelizeOptions);
 

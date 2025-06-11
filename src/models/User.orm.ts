@@ -10,17 +10,32 @@ class UserORM extends Model {
   declare id: number;
 
   @NotNull
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  uid: string;
+
+  @NotNull
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   name: string;
 
   @NotNull
   @Unique
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   email: string;
 
   @NotNull
-  @Unique
-  @Column(DataType.ENUM(...Object.values(UserRole)))
+  @Column({
+    type: DataType.ENUM(...Object.values(UserRole)),
+    allowNull: false,
+  })
   role: UserRole;
 }
 

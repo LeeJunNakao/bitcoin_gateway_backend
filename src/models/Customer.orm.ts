@@ -10,16 +10,32 @@ class CustomerORM extends Model {
   declare id: number;
 
   @NotNull
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  uid: string;
+
+  @NotNull
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   name: string;
 
   @NotNull
   @Unique
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   email: string;
 
   @NotNull
-  @Column(DataType.ENUM(...Object.values(CustomerType)))
+  @Column({
+    type: DataType.ENUM(...Object.values(CustomerType)),
+    allowNull: false,
+  })
   customerType: CustomerType;
 }
 

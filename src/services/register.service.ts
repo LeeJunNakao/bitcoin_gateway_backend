@@ -1,19 +1,42 @@
 import { z } from 'zod';
+import { v4 as uuid } from 'uuid';
 import { RegisterCustomerSchema } from '@/types/validators/register';
 import { CustomerORM } from '@/models/Customer.orm';
 import { UserORM, UserRole } from '@/models/User.orm';
 import { CustomerUserORM, CustomerUserRole } from '@/models/CustomerUser.orm';
 import { OautherClient } from '@oauther/oauther_client';
+import { Transaction, UUID } from 'sequelize';
+import { CryptoMsService } from '@/utils/crypto-ms/http-service';
+import { CustomerAccountORM } from '@/models/CustomerAccount.orm';
+import { BlockchainNetwork, BlockchainCoin } from '@/types/entities/blockchain';
+import { CustomerCoinConfigORM } from '@/models/CustomerCoinConfig.orm';
 
 export class RegisterService {
-  constructor(private oautherClient: OautherClient) {}
+  constructor(
+    private oautherClient: OautherClient,
+    private cryptoMsService: CryptoMsService,
+  ) {}
 
   async register(customerData: z.infer<typeof RegisterCustomerSchema>) {
     const transaction = await CustomerORM.sequelize.transaction();
 
     try {
-      const customer = await CustomerORM.create(customerData.customer, { transaction });
-      const userOwner = await UserORM.create(customerData.user, { transaction });
+      const customer = await CustomerORM.create(
+        { ...customerData.customer, uid: uuid() },
+        { transaction },
+      );
+      const existentUser = await UserORM.findOne({
+        where: {
+          email: customerData.user.email,
+        },
+      });
+
+      const userOwner =
+        existentUser ||
+        (await UserORM.create(
+          { ...customerData.user, uid: uuid(), role: UserRole.CUSTOMER },
+          { transaction },
+        ));
 
       await CustomerUserORM.create(
         {
@@ -24,16 +47,46 @@ export class RegisterService {
         { transaction },
       );
 
-      await this.oautherClient.register({
-        email: customerData.user.email,
-        password: customerData.user.password,
-        roles: [UserRole.CUSTOMER],
-      });
+      const oautherUser = await this.oautherClient.getUserData({ email: customerData.user.email });
+
+      if (!oautherUser) {
+        await this.oautherClient.register({
+          email: customerData.user.email,
+          password: customerData.user.password,
+          roles: [UserRole.CUSTOMER],
+        });
+      }
+
+      await this.createCustomerConfig(customer.id, transaction);
 
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();
       throw error;
     }
+  }
+
+  private async createCustomerConfig(customerId: number, transaction: Transaction) {
+    const lastAccount = await CustomerAccountORM.findOne({ order: [['account', 'desc']] });
+    const account = lastAccount ? lastAccount.account + 1 : 0;
+
+    const xpub = await this.cryptoMsService.createPubkey(account, BlockchainNetwork.BITCOIN);
+
+    await CustomerAccountORM.create(
+      {
+        customerId,
+        account,
+      },
+      { transaction },
+    );
+
+    await CustomerCoinConfigORM.create(
+      {
+        customerId,
+        coin: BlockchainCoin.BITCOIN,
+        pubkey: xpub,
+      },
+      { transaction },
+    );
   }
 }

@@ -1,9 +1,6 @@
 import { Table, Column, Model, ForeignKey, NotNull, DataType } from 'sequelize-typescript';
 import { CustomerORM } from './Customer.orm';
-
-enum Coin {
-  BITCOIN = 'bitcoin',
-}
+import { BlockchainCoin } from '@/types/entities/blockchain';
 
 @Table({ tableName: 'customer_coin_config', paranoid: true })
 class CustomerCoinConfigORM extends Model {
@@ -11,15 +8,24 @@ class CustomerCoinConfigORM extends Model {
 
   @NotNull
   @ForeignKey(() => CustomerORM)
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   customerId: string;
 
   @NotNull
-  @Column(DataType.ENUM(...Object.values(Coin)))
-  coin: Coin;
+  @Column({
+    type: DataType.ENUM(...Object.values(BlockchainCoin)),
+    allowNull: false,
+  })
+  coin: BlockchainCoin;
 
   @NotNull
-  @Column
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   pubkey: string;
 }
 

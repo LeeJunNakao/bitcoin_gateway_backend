@@ -76,12 +76,18 @@ module.exports = {
       name: 'idx_request_entry_customer_network',
       unique: false,
     });
+
+    await queryInterface.addIndex('request_entry', ['customer_id', 'network', 'status'], {
+      name: 'idx_request_entry_customer_network_status',
+      unique: false,
+    });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('request_entry');
-    await queryInterface.removeIndex('request_entry', 'idx_request_entry_customer_network');
     await queryInterface.removeIndex('request_entry', 'uq_request_entry_uid');
+    await queryInterface.removeIndex('request_entry', 'idx_request_entry_customer_network');
+    await queryInterface.removeIndex('request_entry', 'idx_request_entry_customer_network_status');
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_request_entry_network";');
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_request_entry_currency";');
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_request_entry_status";');

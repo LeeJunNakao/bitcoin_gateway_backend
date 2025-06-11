@@ -13,16 +13,25 @@ class CustomerUserORM extends Model {
 
   @NotNull
   @ForeignKey(() => CustomerORM)
-  @Column
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   customerId: number;
 
   @NotNull
   @ForeignKey(() => UserORM)
-  @Column
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   userId: number;
 
   @NotNull
-  @Column(DataType.ENUM(...Object.values(CustomerUserRole)))
+  @Column({
+    type: DataType.ENUM(...Object.values(CustomerUserRole)),
+    allowNull: false,
+  })
   role: CustomerUserRole;
 }
 
