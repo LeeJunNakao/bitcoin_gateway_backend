@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
-import { RegisterCustomerValidator } from '@/types/validators/register';
 import { CustomerORM } from '@/models/Customer.orm';
 import { UserORM, UserRole } from '@/models/User.orm';
 import { CustomerUserORM, CustomerUserRole } from '@/models/CustomerUser.orm';
@@ -10,15 +9,17 @@ import { CryptoMsService } from '@/utils/crypto-ms/http-service';
 import { CustomerAccountORM } from '@/models/CustomerAccount.orm';
 import { BlockchainNetwork, BlockchainCoin } from '@/types/entities/blockchain';
 import { CustomerCoinConfigORM } from '@/models/CustomerCoinConfig.orm';
+import { LoginValidator, RegisterCustomerValidator } from '@/types/validators/auth';
+import { InexistentUserException } from '@/exceptions/auth.exception';
 
-export class RegisterService {
+export class AuthService {
   constructor(
     private oautherClient: OautherClient,
     private cryptoMsService: CryptoMsService,
   ) {}
 
   async register(customerData: z.infer<typeof RegisterCustomerValidator>) {
-    const transaction = await CustomerORM.sequelize.transaction();
+    const transaction = await CustomerORM.sequelize?.transaction();
 
     try {
       const customer = await CustomerORM.create(
@@ -49,8 +50,8 @@ export class RegisterService {
 
       const oautherUser = await this.oautherClient.getUserData({ email: customerData.user.email });
 
-      if (!oautherUser) {
-        await this.oautherClient.register({
+      if (!oautherUser.user) {
+        const response = await this.oautherClient.register({
           email: customerData.user.email,
           password: customerData.user.password,
           roles: [UserRole.CUSTOMER],
@@ -59,14 +60,14 @@ export class RegisterService {
 
       await this.createCustomerConfig(customer.id, transaction);
 
-      await transaction.commit();
+      await transaction?.commit();
     } catch (error) {
-      await transaction.rollback();
+      await transaction?.rollback();
       throw error;
     }
   }
 
-  private async createCustomerConfig(customerId: number, transaction: Transaction) {
+  private async createCustomerConfig(customerId: number, transaction?: Transaction) {
     const lastAccount = await CustomerAccountORM.findOne({ order: [['account', 'desc']] });
     const account = lastAccount ? lastAccount.account + 1 : 0;
 
@@ -88,5 +89,21 @@ export class RegisterService {
       },
       { transaction },
     );
+  }
+
+  async login(loginDto: z.infer<typeof LoginValidator>) {
+    const user = await UserORM.findOne({
+      where: {
+        email: loginDto.email,
+      },
+    });
+
+    if (!user) {
+      throw new InexistentUserException();
+    }
+
+    const response = await this.oautherClient.login(loginDto);
+
+    return response;
   }
 }

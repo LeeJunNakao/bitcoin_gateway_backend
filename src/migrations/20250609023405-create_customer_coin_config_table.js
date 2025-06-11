@@ -10,7 +10,7 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      customerId: {
+      customer_id: {
         type: DataTypes.INTEGER,
         references: {
           model: 'customer',
