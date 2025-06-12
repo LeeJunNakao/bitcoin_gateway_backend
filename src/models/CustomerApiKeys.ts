@@ -10,13 +10,19 @@ import {
 } from 'sequelize-typescript';
 import { CustomerORM } from './Customer.orm';
 
-@Table({ tableName: 'customer_account', paranoid: true })
-class CustomerAccountORM extends Model {
+@Table({ tableName: 'customer_api_key', paranoid: true })
+class CustomerApiKeyORM extends Model {
   declare id: number;
 
   @NotNull
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  uid: string;
+
+  @NotNull
   @ForeignKey(() => CustomerORM)
-  @Unique
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
@@ -24,20 +30,18 @@ class CustomerAccountORM extends Model {
   customerId: number;
 
   @NotNull
-  @Default(0)
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  page: number;
+  name: string;
 
   @NotNull
-  @Unique
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  account: number;
+  apiKey: string;
 }
 
-export { CustomerAccountORM };
+export { CustomerApiKeyORM };

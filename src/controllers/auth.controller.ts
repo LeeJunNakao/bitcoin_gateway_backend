@@ -3,7 +3,7 @@ import { Request, Response, Router } from 'express';
 import { oautherClient } from '@/utils/auth/oauther-client';
 import { validate } from '@/middlewares/controller/validation.middleware';
 import { LoginValidator, RegisterCustomerValidator } from '@/types/validators/auth';
-import { AuthService } from '@/services/auth';
+import { AuthService } from '@/services/auth.service';
 import { CryptoMsService } from '@/utils/crypto-ms/http-service';
 import { InexistentUserException } from '@/exceptions/auth.exception';
 

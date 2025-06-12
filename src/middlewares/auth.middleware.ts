@@ -1,23 +1,83 @@
+import { CustomerORM } from '@/models/Customer.orm';
+import { CustomerUserORM } from '@/models/CustomerUser.orm';
+import { UserORM } from '@/models/User.orm';
 import { oautherClient } from '@/utils/auth/oauther-client';
 import { NextFunction, Request, Response } from 'express';
 
 export enum AuthHeaders {
   AccessToken = 'access-token',
+  CustomerUID = 'customer-uid',
 }
 
-export const accessGuard = async (req: Request, res: Response, next: NextFunction) => {
+export const accessGuardMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (req.method === 'OPTIONS') {
     return next();
   }
 
   const accessToken = req.header(AuthHeaders.AccessToken) as string;
-  const response = await oautherClient.verifyAuthentication(accessToken);
+  const autherUser = await oautherClient.verifyAuthentication(accessToken);
+  const user = await UserORM.findOne({
+    where: {
+      email: autherUser.email,
+    },
+  });
 
-  if (!accessToken || !response) {
+  if (!accessToken || !user) {
     res.status(401).send({ message: 'Token is invalid' });
 
     return;
   }
+
+  req.internalData = {
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+  };
+
+  next();
+};
+
+export const customerAccessMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
+  const internalData = req.internalData;
+
+  if (!internalData) {
+    res.status(401).send({ message: 'Not authorized' });
+
+    return;
+  }
+
+  const customerUID = req.header(AuthHeaders.CustomerUID) as string;
+  const customer = await CustomerORM.findOne({
+    where: {
+      uid: customerUID,
+    },
+  });
+
+  if (!customer) {
+    res.status(401).send({ message: 'Not authorized' });
+
+    return;
+  }
+
+  const customerUserRelationship = await CustomerUserORM.findOne({
+    where: {
+      customerId: customer.id,
+      userId: internalData.user.id,
+    },
+  });
+
+  if (!customerUserRelationship) {
+    res.status(403).send({ message: 'Not allowed for this credentials' });
+
+    return;
+  }
+
+  req.internalData = { ...req.internalData!, customer: { id: customer.id } };
 
   next();
 };

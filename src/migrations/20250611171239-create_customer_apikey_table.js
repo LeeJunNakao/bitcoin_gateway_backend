@@ -4,50 +4,58 @@ const { DataTypes } = require('sequelize');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('user', {
+    await queryInterface.createTable('customer_api_key', {
       id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
         autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
       },
       uid: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
+      customer_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'customer',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       name: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING(50),
         allowNull: false,
       },
-      email: {
-        type: DataTypes.STRING(100),
-        unique: true,
-        allowNull: false,
-      },
-      role: {
-        type: DataTypes.ENUM(['admin', 'customer']),
+      api_key: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
       },
       deleted_at: {
         type: DataTypes.DATE,
         allowNull: true,
       },
     });
+
+    await queryInterface.addIndex('customer_api_key', ['customer_id'], {
+      name: 'idx_customer_api_key_customer_id',
+      unique: false,
+    });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('user');
-
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_user_role";');
+    await queryInterface.dropTable('customer_api_key');
+    await queryInterface.removeIndex('customer_api_key', 'idx_customer_api_key_customer_id');
   },
 };
