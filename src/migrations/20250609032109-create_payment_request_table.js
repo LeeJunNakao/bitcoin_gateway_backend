@@ -14,6 +14,7 @@ module.exports = {
       request_uid: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       customer_id: {
         type: DataTypes.INTEGER,

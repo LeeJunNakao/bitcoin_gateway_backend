@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, NotNull, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, NotNull, ForeignKey, Unique } from 'sequelize-typescript';
 import { CustomerORM } from './Customer.orm';
 import { BlockchainNetwork } from '@/types/entities/blockchain';
 
@@ -6,7 +6,7 @@ enum RequestCurrency {
   BITCOIN = 'bitcoin',
 }
 
-enum RequestStatus {
+export enum RequestStatus {
   PENDING = 'pending',
   PAID = 'paid',
 }
@@ -16,6 +16,7 @@ class PaymentRequestORM extends Model {
   declare id: number;
 
   @NotNull
+  @Unique
   @Column({
     type: DataType.STRING,
     allowNull: false,

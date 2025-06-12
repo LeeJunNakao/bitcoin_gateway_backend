@@ -20,4 +20,18 @@ export class CryptoMsService {
 
     return xpub;
   }
+
+  async signTransaction(
+    hdPath: string,
+    network: BlockchainNetwork,
+    base64Transaction: string,
+  ): Promise<{ transaction: string }> {
+    const response = await this.client.post(`/transaction/sign`, {
+      hdPath,
+      network,
+      transaction: base64Transaction,
+    });
+
+    return response.data;
+  }
 }

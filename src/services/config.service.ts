@@ -1,8 +1,6 @@
-import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
-import { CreateConfigAPIKeyValidator } from '@/types/validators/config';
 import { CustomerApiKeyORM } from '@/models/CustomerApiKeys';
-import { generateRandomHash } from '@/utils/cypto';
+import { generateRandomHash } from '@/utils/crypto';
 
 type CreateAPIKeyDTO = {
   name: string;
@@ -23,5 +21,15 @@ export class ConfigService {
       name: customerApiKey.name,
       apiKey: customerApiKey.apiKey,
     };
+  }
+
+  async listAPIKeys(customerId: number) {
+    const customerApiKeys = await CustomerApiKeyORM.findAll({
+      where: {
+        customerId,
+      },
+    });
+
+    return customerApiKeys;
   }
 }

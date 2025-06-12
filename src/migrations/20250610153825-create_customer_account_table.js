@@ -29,7 +29,6 @@ module.exports = {
       account: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
       },
       created_at: {
         type: DataTypes.DATE,

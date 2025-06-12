@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { Request, Response, Router } from 'express';
-import { oautherClient } from '@/utils/auth/oauther-client';
+import { oautherClient } from '@/utils/auth/oauther-client.util';
 import { validate } from '@/middlewares/controller/validation.middleware';
 import { LoginValidator, RegisterCustomerValidator } from '@/types/validators/auth';
 import { AuthService } from '@/services/auth.service';
-import { CryptoMsService } from '@/utils/crypto-ms/http-service';
+import { CryptoMsService } from '@/utils/crypto-ms/http-service.util';
 import { InexistentUserException } from '@/exceptions/auth.exception';
 
 export default class AuthController {

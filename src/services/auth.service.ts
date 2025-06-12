@@ -5,7 +5,7 @@ import { UserORM, UserRole } from '@/models/User.orm';
 import { CustomerUserORM, CustomerUserRole } from '@/models/CustomerUser.orm';
 import { OautherClient } from '@oauther/oauther_client';
 import { Transaction, UUID } from 'sequelize';
-import { CryptoMsService } from '@/utils/crypto-ms/http-service';
+import { CryptoMsService } from '@/utils/crypto-ms/http-service.util';
 import { CustomerAccountORM } from '@/models/CustomerAccount.orm';
 import { BlockchainNetwork, BlockchainCoin } from '@/types/entities/blockchain';
 import { CustomerCoinConfigORM } from '@/models/CustomerCoinConfig.orm';

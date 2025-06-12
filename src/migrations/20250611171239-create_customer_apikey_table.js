@@ -52,10 +52,22 @@ module.exports = {
       name: 'idx_customer_api_key_customer_id',
       unique: false,
     });
+
+    await queryInterface.addIndex('customer_api_key', ['customer_id', 'api_key'], {
+      name: 'idx_customer_api_key_customer_apikey',
+      unique: true,
+    });
+
+    await queryInterface.addIndex('customer_api_key', ['customer_id', 'name'], {
+      name: 'idx_customer_api_key_customer_name',
+      unique: true,
+    });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('customer_api_key');
     await queryInterface.removeIndex('customer_api_key', 'idx_customer_api_key_customer_id');
+    await queryInterface.removeIndex('customer_api_key', 'idx_customer_api_key_customer_apikey');
+    await queryInterface.removeIndex('customer_api_key', 'idx_customer_api_key_customer_name');
   },
 };

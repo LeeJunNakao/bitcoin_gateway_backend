@@ -16,7 +16,6 @@ class CustomerAccountORM extends Model {
 
   @NotNull
   @ForeignKey(() => CustomerORM)
-  @Unique
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
@@ -32,7 +31,6 @@ class CustomerAccountORM extends Model {
   page: number;
 
   @NotNull
-  @Unique
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
