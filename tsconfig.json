@@ -21,7 +21,7 @@
     "allowJs": true,
     "paths": {
       "@/*": [
-        "./*"
+        "*"
       ],
       "@services/*": [
         "services/*"
@@ -29,9 +29,19 @@
       "@middlewares/*": [
         "middlewares/*"
       ],
-      "@/models/*": [
+      "@models/*": [
         "models/*"
+      ],
+      "@types/*": [
+        "types/*"
+      ],
+      "@config/*": [
+        "config/*"
       ]
     }
-  }
+  },
+  "include": [
+    "src/**/*",
+    "src/@types/**/*.d.ts"
+  ]
 }

@@ -1,21 +1,16 @@
+import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
-import { BlockchainCoin, BlockchainNetwork } from '@/types/entities/blockchain';
 import { PaymentRequestORM, RequestStatus } from '@/models/PaymentRequest.orm';
 import { getAddressHandler } from '@/utils/blockchain/address-handler';
 import { CustomerAccountORM } from '@/models/CustomerAccount.orm';
 import { CustomerCoinConfigORM } from '@/models/CustomerCoinConfig.orm';
 import { CustomerConfigException } from '@/exceptions/blockchain.exception';
-
-type CreatePaymentRequestDTO = {
-  network: BlockchainNetwork;
-  coin: BlockchainCoin;
-  customerId: number;
-  value: string;
-  description: string;
-};
+import { CreatePaymentRequestValidator } from '@/types/validators/api/payment';
 
 export class PaymentService {
-  async createPaymentRequest(dto: CreatePaymentRequestDTO) {
+  async createPaymentRequest(
+    dto: z.infer<typeof CreatePaymentRequestValidator> & { customerId: number },
+  ) {
     const requestIndex = await PaymentRequestORM.count({
       where: {
         customerId: dto.customerId,
@@ -27,7 +22,6 @@ export class PaymentService {
         customerId: dto.customerId,
         coin: dto.coin,
       },
-      order: [['page', 'DESC']],
     });
     const wallet = await CustomerAccountORM.findOne({
       where: {
@@ -48,7 +42,7 @@ export class PaymentService {
     const paymentRequest = await PaymentRequestORM.create({
       requestUID: uuid(),
       customerId: dto.customerId,
-      expectedValue: dto.value,
+      expectedValue: Number(dto.value),
       network: dto.network,
       currency: dto.coin,
       networkAddress: address,

@@ -27,7 +27,7 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       expected_value: {
-        type: DataTypes.STRING,
+        type: DataTypes.BIGINT,
         allowNull: false,
       },
       network: {

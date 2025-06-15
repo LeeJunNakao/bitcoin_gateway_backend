@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { connectDatabase } from '@/config';
+import { connectDatabase } from '@config/index';
 import setRoutes from '@/controllers';
 import { errorInterceptor } from './middlewares/controller/error-interceptor.middleware';
 

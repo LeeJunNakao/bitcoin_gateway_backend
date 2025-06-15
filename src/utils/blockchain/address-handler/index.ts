@@ -1,5 +1,5 @@
 import { BlockchainNetwork } from '@/types/entities/blockchain';
-import { BitcoinAddressHandler } from './networks/bitcoin-address.util';
+import { BitcoinAddressHandler } from './network-adapters/bitcoin-address.util';
 
 export const getAddressHandler = (network: BlockchainNetwork) => {
   const options = {

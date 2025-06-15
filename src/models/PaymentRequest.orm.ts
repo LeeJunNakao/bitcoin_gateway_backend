@@ -33,10 +33,10 @@ class PaymentRequestORM extends Model {
 
   @NotNull
   @Column({
-    type: DataType.STRING,
+    type: DataType.BIGINT,
     allowNull: false,
   })
-  expectedValue: string;
+  expectedValue: bigint;
 
   @NotNull
   @Column({
