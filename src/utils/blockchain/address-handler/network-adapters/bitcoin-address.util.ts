@@ -22,7 +22,7 @@ export class BitcoinAddressHandler extends AddressHandler {
 
     const { address } = bitcoin.payments.p2wpkh({
       pubkey: Buffer.from(child.publicKey),
-      network: bitcoin.networks.bitcoin,
+      network: this.network,
     });
 
     if (!address) {

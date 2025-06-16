@@ -4,6 +4,7 @@ import { CustomerApiKeyORM } from './CustomerApiKeys';
 import { CustomerCoinConfigORM } from './CustomerCoinConfig.orm';
 import { CustomerUserORM } from './CustomerUser.orm';
 import { PaymentRequestORM } from './PaymentRequest.orm';
+import { PaymentRequestProcessingQueueORM } from './PaymentRequestProcessingQueue.orm';
 import { UserORM } from './User.orm';
 
 export const models = [
@@ -14,4 +15,5 @@ export const models = [
   CustomerUserORM,
   PaymentRequestORM,
   CustomerApiKeyORM,
+  PaymentRequestProcessingQueueORM,
 ];

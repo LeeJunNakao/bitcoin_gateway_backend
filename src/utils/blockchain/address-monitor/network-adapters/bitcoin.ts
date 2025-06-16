@@ -30,10 +30,7 @@ const rpcCall = async (method: string, params: any[] = []) => {
 
 export class BitcoinMonitorHandler {
   private async getUtxosForAddress(address: string) {
-    const utxos = await rpcCall('scantxoutset', [
-      'start',
-      [{ desc: `addr(${address})`, range: 999999 }],
-    ]);
+    const utxos = await rpcCall('scantxoutset', ['start', [{ desc: `addr(${address})` }]]);
 
     return utxos;
   }
