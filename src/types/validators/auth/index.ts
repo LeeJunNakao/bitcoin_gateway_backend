@@ -22,3 +22,9 @@ export const RegisterCustomerValidator = z
     }),
   })
   .strict();
+
+export const VerifyAuthenticationValidator = z
+  .object({
+    token: z.string().min(20),
+  })
+  .strict();

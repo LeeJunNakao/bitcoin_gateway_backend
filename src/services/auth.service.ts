@@ -9,7 +9,11 @@ import { CryptoMsService } from '@/utils/crypto-ms/http-service.util';
 import { CustomerAccountORM } from '@/models/CustomerAccount.orm';
 import { BlockchainNetwork, BlockchainCoin } from '@/types/entities/blockchain';
 import { CustomerCoinConfigORM } from '@/models/CustomerCoinConfig.orm';
-import { LoginValidator, RegisterCustomerValidator } from '@/types/validators/auth';
+import {
+  LoginValidator,
+  RegisterCustomerValidator,
+  VerifyAuthenticationValidator,
+} from '@/types/validators/auth';
 import { InexistentUserException } from '@/exceptions/auth.exception';
 
 export class AuthService {
@@ -51,7 +55,7 @@ export class AuthService {
       const oautherUser = await this.oautherClient.getUserData({ email: customerData.user.email });
 
       if (!oautherUser.user) {
-        const response = await this.oautherClient.register({
+        await this.oautherClient.register({
           email: customerData.user.email,
           password: customerData.user.password,
           roles: [UserRole.CUSTOMER],
@@ -104,6 +108,16 @@ export class AuthService {
 
     const response = await this.oautherClient.login(loginDto);
 
-    return response;
+    return { token: response.token, user: { email: user.email, name: user.name } };
+  }
+
+  async verifyAuthentication(token: string) {
+    try {
+      const response = await this.oautherClient.verifyAuthentication(token);
+
+      return !!response;
+    } catch (error) {
+      return false;
+    }
   }
 }

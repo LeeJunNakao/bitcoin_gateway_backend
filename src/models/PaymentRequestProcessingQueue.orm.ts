@@ -1,11 +1,17 @@
-import { Table, Column, Model, DataType, NotNull, ForeignKey, Unique } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  NotNull,
+  ForeignKey,
+  Unique,
+  CreatedAt,
+  AllowNull,
+} from 'sequelize-typescript';
 import { CustomerORM } from './Customer.orm';
-import { BlockchainNetwork } from '@/types/entities/blockchain';
-import { RequestStatus } from './PaymentRequest.orm';
-
-enum RequestCurrency {
-  BITCOIN = 'bitcoin',
-}
+import { BlockchainNetwork, BlockchainCoin } from '@/types/entities/blockchain';
+import { RequestStatus } from '@/types/entities/payment';
 
 @Table({ tableName: 'payment_request_processing_queue', paranoid: false })
 class PaymentRequestProcessingQueueORM extends Model {
@@ -43,10 +49,10 @@ class PaymentRequestProcessingQueueORM extends Model {
 
   @NotNull
   @Column({
-    type: DataType.ENUM(...Object.values(RequestCurrency)),
+    type: DataType.ENUM(...Object.values(BlockchainCoin)),
     allowNull: false,
   })
-  currency: RequestCurrency;
+  currency: BlockchainCoin;
 
   @NotNull
   @Column({
@@ -62,8 +68,19 @@ class PaymentRequestProcessingQueueORM extends Model {
   })
   status: RequestStatus;
 
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  height: number;
+
   @Column
   transactionHash: string;
+
+  @CreatedAt
+  @AllowNull(false)
+  @Column
+  createdAt: Date;
 }
 
 export { PaymentRequestProcessingQueueORM };

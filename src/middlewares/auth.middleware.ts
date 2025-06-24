@@ -4,7 +4,6 @@ import { CustomerUserORM } from '@/models/CustomerUser.orm';
 import { UserORM } from '@/models/User.orm';
 import { oautherClient } from '@/utils/auth/oauther-client.util';
 import { NextFunction, Request, Response } from 'express';
-import { where } from 'sequelize';
 
 export enum AuthHeaders {
   AccessToken = 'access-token',

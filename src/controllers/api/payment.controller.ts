@@ -4,6 +4,7 @@ import { PaymentService } from '@/services/api/payment.service';
 import { validate } from '@/middlewares/controller/validation.middleware';
 import { CreatePaymentRequestValidator } from '@/types/validators/api/payment';
 import { getMonitorHandler } from '@/utils/blockchain/address-monitor';
+import { PaymentProcessorMsService } from '@/utils/payment-processor-ms/http-service.util';
 
 export default class PaymentController {
   constructor(private paymentService: PaymentService) {
@@ -18,21 +19,16 @@ export default class PaymentController {
       customerId: req.internalData?.customer?.id!,
     });
 
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>', paymentRequest.networkAddress);
-
-    const NetworkMonitor = getMonitorHandler(body.network);
-    const networkMonitor = new NetworkMonitor();
-
-    await networkMonitor.monitorAddress(paymentRequest.networkAddress, Number(body.value));
-
-    res.send({ message: 'Value received' });
+    res.send({ message: 'Value received', address: paymentRequest.networkAddress });
   }
 }
 
 export const mountRoute = () => {
   const router = Router();
 
-  const registerController = new PaymentController(new PaymentService());
+  const registerController = new PaymentController(
+    new PaymentService(new PaymentProcessorMsService()),
+  );
   router.post(
     '/request',
     validate(CreatePaymentRequestValidator),

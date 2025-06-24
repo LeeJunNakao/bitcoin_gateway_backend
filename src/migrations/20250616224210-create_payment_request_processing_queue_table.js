@@ -43,14 +43,29 @@ module.exports = {
         allowNull: false,
       },
       status: {
-        type: DataTypes.ENUM(['pending', 'paid']),
+        type: DataTypes.ENUM([
+          'pending',
+          'processing',
+          'partially_paid',
+          'paid',
+          'expired',
+          'expired_partially_paid',
+        ]),
         allowNull: false,
       },
       transaction_hash: {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      height: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
       },

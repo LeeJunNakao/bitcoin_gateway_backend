@@ -1,13 +1,17 @@
 import { z } from 'zod';
 import { v4 as uuid } from 'uuid';
-import { PaymentRequestORM, RequestStatus } from '@/models/PaymentRequest.orm';
+import { PaymentRequestORM } from '@/models/PaymentRequest.orm';
 import { getAddressHandler } from '@/utils/blockchain/address-handler';
 import { CustomerAccountORM } from '@/models/CustomerAccount.orm';
 import { CustomerCoinConfigORM } from '@/models/CustomerCoinConfig.orm';
 import { CustomerConfigException } from '@/exceptions/blockchain.exception';
 import { CreatePaymentRequestValidator } from '@/types/validators/api/payment';
+import { RequestStatus } from '@/types/entities/payment';
+import { PaymentProcessorMsService } from '@/utils/payment-processor-ms/http-service.util';
 
 export class PaymentService {
+  constructor(private paymentProcessorMsService: PaymentProcessorMsService) {}
+
   async createPaymentRequest(
     dto: z.infer<typeof CreatePaymentRequestValidator> & { customerId: number },
   ) {
@@ -39,8 +43,8 @@ export class PaymentService {
 
     const address = addressHandler.getAddress(wallet.page, wallet.account, requestIndex);
 
-    const paymentRequest = await PaymentRequestORM.create({
-      requestUID: uuid(),
+    const paymentData = {
+      requestUid: uuid(),
       customerId: dto.customerId,
       expectedValue: Number(dto.value),
       network: dto.network,
@@ -48,6 +52,13 @@ export class PaymentService {
       networkAddress: address,
       status: RequestStatus.PENDING,
       description: dto.description,
+    };
+
+    const paymentRequest = await PaymentRequestORM.create(paymentData);
+
+    await this.paymentProcessorMsService.addPaymentToQueue({
+      ...paymentData,
+      expectedValue: String(paymentData.expectedValue),
     });
 
     return paymentRequest;

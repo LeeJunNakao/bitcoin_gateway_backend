@@ -1,7 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
 import * as config from '@/config/database';
-import { CustomerORM } from '@/models/Customer.orm';
-import { UserORM } from '@/models/User.orm';
 import { models } from '@/models';
 
 const env = process.env.NODE_ENV || 'development';
